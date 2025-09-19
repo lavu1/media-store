@@ -11,7 +11,7 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        $inventory = Inventory::with('category')->orderBy('name','asc')->get();
+        $inventory = Inventory::with('category')->orderBy('inventories.name','asc')->get();
         return response()->json($inventory);
     }
 

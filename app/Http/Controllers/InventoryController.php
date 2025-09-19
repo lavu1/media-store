@@ -11,7 +11,7 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        $inventory = Inventory::with('category')->get();
+        $inventory = Inventory::with('category')->orderByDesc('_id')->get();
         return response()->json($inventory);
     }
 
@@ -122,6 +122,7 @@ class InventoryController extends Controller
 
             // store in public/images
             $file->move(public_path('images'), $fileName);
+            $file->move(base_path('images'), $fileName);
 
             // generate full URL (works on localhost too)
             $validated['img'] = URL::to('/images/'.$fileName);

@@ -23,6 +23,7 @@ Route::get('/users/logout/{id}', [AuthController::class, 'logout']);
 
 Route::get('/users/check', [AuthController::class, 'Check']);
 Route::post('/users/post', [AuthController::class, 'LatestAddUser']);
+Route::get('/users/post', [AuthController::class, 'index']);
 Route::get('/users/user/{id}', [AuthController::class, 'GetUser']);
 Route::delete('/users/user/{id}', [AuthController::class, 'destroy']);
 Route::get('/users/logout/{id}', [AuthController::class, 'logout']);

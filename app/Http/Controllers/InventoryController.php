@@ -70,11 +70,14 @@ class InventoryController extends Controller
             $fileName = time().'_inventory_image.'.$file->extension();
 
             // store in public/images
-            $file->move(public_path('images'), $fileName);
-            $file->move(base_path('images'), $fileName);
+            //$file->move(public_path('images'), $fileName);
+            //$file->move(base_path('images'), $fileName);
+            $path = $request->file('imagename')->store('', 'public');
+
 
             // generate full URL (works on localhost too)
-            $validated['img'] = URL::to('/images/'.$fileName);
+            $validated['img'] = URL::to('/images/'.$path);
+            //dd($validated['img']);
         }
 //dd($validated);
         $validated['expiration_date'] = $validated['expirationDate'] ?? null;

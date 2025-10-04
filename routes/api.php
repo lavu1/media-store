@@ -52,6 +52,7 @@ Route::delete('/categories/category/{id}', [CategoryController::class,'destroy']
 // Inventory API
 //Route::apiResource('inventory', InventoryController::class);
 Route::post('/inventory/product', [InventoryController::class,'store']);
+Route::post('/services', [\App\Http\Controllers\ServiceRequest::class,'store']);
 Route::get('/inventory/products', [InventoryController::class,'index']);
 Route::get('/inventory/product/sku',[InventoryController::class,'getProductSku']);
 Route::get('/inventory/product/{id}',[InventoryController::class,'show']);

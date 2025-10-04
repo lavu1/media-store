@@ -12,14 +12,14 @@ class ServiceRequest extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'nullable|string',
-            'days' => 'nullable|string',
-            'name' => 'nullable|string',
+            'type' => 'nullable',
+            'days' => 'nullable',
+            'name' => 'nullable',
             'email' => 'nullable',
             'phone' => 'nullable',
-            'education_background' => 'nullable|string',
+            'education_background' => 'nullable',
             'work_experience' => 'nullable',
-            'skills' => 'required|string',
+            'skills' => 'nullable',
             'status' => 'nullable',
             'cv_file_path' => 'nullable',
            // 'img' => 'nullable', // image file

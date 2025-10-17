@@ -9,6 +9,56 @@ use Illuminate\Support\Facades\URL;
 
 class ServiceRequest extends Controller
 {
+
+    public function index()
+    {
+        $serviceRequests = ServiceRequests::where('type','Share me Jobs')->where('status','pending')->orderBy('id','asc')->get();
+        return response()->json($serviceRequests);
+    }
+
+    public function show($id)
+    {
+        $serviceRequests = ServiceRequests::find($id);
+
+        if (!$serviceRequests) {
+            return response()->json(['error' => 'service Requests item not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($serviceRequests);
+    }
+    public function update(Request $request,$id)
+    {
+        //$id = $request->input('id');
+        $serviceRequests = ServiceRequests::find($id);
+
+        if (!$serviceRequests) {
+            return response()->json(['error' => 'service Requests item not found'], Response::HTTP_NOT_FOUND);
+        }
+        $validated = $request->validate([
+            'days' => 'nullable|string',
+            'status' => 'nullable|string',
+        ]);
+
+//dd($validated);
+        $validated['days'] = $validated['days'] ?? '1';
+        $validated['status'] = $validated['status'] ?? 'pending';
+        $serviceRequests->update($validated);
+        return response()->json($serviceRequests);
+    }
+
+    public function destroy($id)
+    {
+        $inventory = ServiceRequests::find($id);
+
+        if (!$inventory) {
+            return response()->json(['error' => 'Inventory item not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $inventory->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -39,7 +89,7 @@ class ServiceRequest extends Controller
 
 
             // generate full URL (works on localhost too)
-            $validated['cv_file_path'] = URL::to('/files/'.$path);
+            $validated['cv_file_path'] = URL::to('/images/'.$path);
             //dd($validated['img']);
         }
         // dd($validated);

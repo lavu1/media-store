@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ServiceRequest;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -52,7 +53,6 @@ Route::delete('/categories/category/{id}', [CategoryController::class,'destroy']
 // Inventory API
 //Route::apiResource('inventory', InventoryController::class);
 Route::post('/inventory/product', [InventoryController::class,'store']);
-Route::post('/services', [\App\Http\Controllers\ServiceRequest::class,'store']);
 Route::get('/inventory/products', [InventoryController::class,'index']);
 Route::get('/inventory/product/sku',[InventoryController::class,'getProductSku']);
 Route::get('/inventory/product/{id}',[InventoryController::class,'show']);
@@ -81,3 +81,8 @@ Route::get('/delete',[TransactionController::class,'destroy']);
 // Additional routes
 Route::get('inventory/low-stock', [InventoryController::class, 'lowStock']);
 //Route::get('transactions/by-date/{date}', [TransactionController::class, 'byDate']);
+
+//service requests API
+Route::post('/services', [ServiceRequest::class,'store']);
+Route::put('/services-update/{id}', [ServiceRequest::class,'update']);
+Route::get('/services-all', [ServiceRequest::class,'index']);

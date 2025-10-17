@@ -169,7 +169,6 @@ class InventoryController extends Controller
 
 
 
-
     public function lowStock()
     {
         $lowStockItems = Inventory::whereRaw('stock <= min_stock')->get();

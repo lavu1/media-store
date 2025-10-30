@@ -218,7 +218,7 @@ class ServiceRequest extends Controller
             'result' => $response->body(),
         ]);
     }
-
+/*
     public function generatenew(Request $request)
     {
         $validated = $request->validate([
@@ -267,7 +267,7 @@ class ServiceRequest extends Controller
             $phpWord = new PhpWord();
             $section = $phpWord->addSection();
             foreach (explode("\n", $result) as $line) {
-                if (preg_match('/^\*\*(.*?)\*\*/', $line, $m)) {
+                if (preg_match('/^\*\*(.*?)\*\*\/', $line, $m)) {
                     $section->addText($m[1], ['bold' => true]);
                 } else {
                     $section->addText($line);
@@ -286,6 +286,89 @@ class ServiceRequest extends Controller
 
         // --- Create a public URL ---
         $fileUrl = URL::to('/storage/generated/' . $fileName);
+
+        // --- Save to database for that device ---
+        DeviceFileLink::create([
+            'device_id' => $validated['device_id'],
+            'file_url' => $fileUrl,
+            'file_type' => $validated['type'],
+        ]);
+
+        // --- Return JSON response ---
+        return response()->json([
+            'status' => 'success',
+            'type' => $validated['type'],
+            'format' => $extension,
+            'file_link' => $fileUrl,
+            'text_result' => $result,
+        ]);
+    }
+*/
+    public function generatenew(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required|string|in:cover_letter,cv',
+            'name' => 'required|string',
+            'position' => 'nullable|string',
+            'experience' => 'nullable|string',
+            'skills' => 'nullable|string',
+            'education' => 'nullable|string',
+            'company' => 'nullable|string',
+            'tone' => 'nullable|string',
+            'format' => 'nullable|string|in:pdf,docx,txt',
+            'device_id' => 'required|string',
+        ]);
+
+        // --- Build the prompt ---
+        $prompt = $this->buildPrompt($validated);
+
+        // --- Request from Pollinations ---
+        $response = Http::get('https://text.pollinations.ai/' . $prompt);
+        $result = $response->successful() ? trim($response->body()) : 'Failed to generate text.';
+
+        // --- Save file in public/generated ---
+        $extension = $validated['format'] ?? 'txt';
+        $fileName = time() . '_' . Str::slug($validated['name']) . '.' . $extension;
+        $destinationPath = public_path('generated'); // public/generated
+
+        // Create directory if not exists
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+
+        $fullPath = $destinationPath . '/' . $fileName;
+
+        // Generate file
+        if ($extension === 'pdf') {
+            $html = '
+        <html>
+            <head><meta charset="utf-8"><style>body{font-family: DejaVu Sans, sans-serif;}</style></head>
+            <body>' . nl2br(e($result)) . '</body>
+        </html>';
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html);
+            file_put_contents($fullPath, $pdf->output());
+
+        } elseif ($extension === 'docx') {
+            $phpWord = new PhpWord();
+            $section = $phpWord->addSection();
+            foreach (explode("\n", $result) as $line) {
+                if (preg_match('/^\*\*(.*?)\*\*/', $line, $m)) {
+                    $section->addText($m[1], ['bold' => true]);
+                } else {
+                    $section->addText($line);
+                }
+            }
+            $writer = IOFactory::createWriter($phpWord, 'Word2007');
+            $writer->save($fullPath);
+
+        } else {
+            // For txt files
+            file_put_contents($fullPath, $result);
+        }
+
+        // --- Create a public URL ---
+        $fileUrl = url('generated/' . $fileName);
 
         // --- Save to database for that device ---
         DeviceFileLink::create([

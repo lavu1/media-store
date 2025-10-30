@@ -368,7 +368,7 @@ class ServiceRequest extends Controller
         }
 
         // --- Create a public URL ---
-        $fileUrl = url('generated/' . $fileName);
+        $fileUrl = url('public/generated/' . $fileName);
 
         // --- Save to database for that device ---
         DeviceFileLink::create([

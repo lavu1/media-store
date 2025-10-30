@@ -84,5 +84,7 @@ Route::get('inventory/low-stock', [InventoryController::class, 'lowStock']);
 
 //service requests API
 Route::post('/services', [ServiceRequest::class,'store']);
+Route::post('/generate-text', [ServiceRequest::class, 'generate']);
+Route::post('/generate-texts', [ServiceRequest::class, 'generatenew']);
 Route::put('/services-update/{id}', [ServiceRequest::class,'update']);
 Route::get('/services-all', [ServiceRequest::class,'index']);
